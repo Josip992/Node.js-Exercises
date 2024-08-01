@@ -1,0 +1,26 @@
+{
+  "name": "rest-shop",
+  "version": "1.0.0",
+  "description": "Shop API tutorial academind",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Josip992/Node.js-Exercises.git"
+  },
+  "keywords": [
+    "node",
+    "restful"
+  ],
+  "author": "Josip992",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Josip992/Node.js-Exercises/issues"
+  },
+  "homepage": "https://github.com/Josip992/Node.js-Exercises#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
