@@ -64,20 +64,27 @@ router.get('/:productId', (req,res,next)=>{
     });
 });
 
-router.patch('/:productId', (req,res,next)=>{
-    const id = req.params.productId;
-    res.status(200).json({
-        message:'Patch req to update product',
-        id: id
-    })
+router.patch('/:id', (req, res, next) => {
+    const id = req.params.id;
+    Product.findByIdAndUpdate(id, { $set: req.body }, { new: true})
+      .then(result => res.status(200).json(result))
+      .catch(err => res.status(500).json({ error: err}))
 });
+
 
 router.delete('/:productId', (req,res,next)=>{
     const id = req.params.productId;
-    res.status(200).json({
-        message:'Delete req for a product',
-        id: id
+    Product.deleteOne({_id: id})
+    .exec()
+    .then(result => {
+        res.status(200).json(result);
     })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            error: err
+        });
+    });
 });
 
 module.exports = router;

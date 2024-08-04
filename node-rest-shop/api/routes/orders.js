@@ -58,15 +58,30 @@ router.get('/:orderID', (req,res,next)=>{
     .catch(err => {
         console.log(err);
         res.status(500).json({
-            errror: err
+            error: err
         });
     });
 });
 
+router.patch('/:id', (req, res, next) => {
+    const id = req.params.id;
+    Order.findByIdAndUpdate(id, { $set: req.body }, { new: true})
+      .then(result => res.status(200).json(result))
+      .catch(err => res.status(500).json({ error: err}))
+});
+
 router.delete('/:orderID', (req,res,next)=>{
-    res.status(200).json({
-        message: 'Delted an order',
-        id: req.params.orderID
+    const id = req.params.orderID;
+    Order.deleteOne({_id: id})
+    .exec()
+    .then(result => {
+        res.status(200).json(result);
+    })
+    .catch(error => {
+        console.log(error);
+        res.status(500).json({
+            error: error
+        });
     });
 });
 
