@@ -5,12 +5,27 @@ const mongoose = require('mongoose');
 const Product = require('../models/product');
 
 
-router.get('/', (req,res,next)=>{
+router.get('/', (req,res, _next)=>{
     Product.find()
+    .select('-__v')
     .exec()
     .then(docs => {
+        const response = {
+            count: docs.length,
+            products: docs.map(doc=>{
+                return {
+                    name: doc.name,
+                    price: doc.price,
+                    _id: doc._id,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:8080/products/' + doc._id
+                    }
+                }
+            })
+        };
         console.log(docs);
-        res.status(200).json(docs);    
+        res.status(200).json(response);    
     })
     .catch(err => {
         console.log(err);
@@ -20,7 +35,7 @@ router.get('/', (req,res,next)=>{
     });
 }); 
 
-router.post('/', (req,res,next)=>{
+router.post('/', (req,res,_next)=>{
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -41,9 +56,10 @@ router.post('/', (req,res,next)=>{
     });
 });
 
-router.get('/:productId', (req,res,next)=>{
+router.get('/:productId', (req,res,_next)=>{
     const id = req.params.productId;
     Product.findById(id)
+    .select('-__v')
     .exec()
     .then(doc => {  
         console.log("From database: ", doc);
@@ -64,7 +80,7 @@ router.get('/:productId', (req,res,next)=>{
     });
 });
 
-router.patch('/:id', (req, res, next) => {
+router.patch('/:id', (req, res, _next) => {
     const id = req.params.id;
     Product.findByIdAndUpdate(id, { $set: req.body }, { new: true})
       .then(result => res.status(200).json(result))
@@ -72,7 +88,7 @@ router.patch('/:id', (req, res, next) => {
 });
 
 
-router.delete('/:productId', (req,res,next)=>{
+router.delete('/:productId', (req,res, _next)=>{
     const id = req.params.productId;
     Product.deleteOne({_id: id})
     .exec()
