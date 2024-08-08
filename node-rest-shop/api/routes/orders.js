@@ -44,8 +44,16 @@ router.post('/', (req,res, _next)=>{
     order.save().then(result => {
         console.log(result);
         res.status(201).json({ //successful request, resource created
-            message: 'POST handler for /orders/',
-            createdOrder: order
+            message: 'Created an order!',
+            createdOrder: {
+                quantity: result.quantity,
+                productId: result.productId,
+                _id: result._id,
+                request:{
+                    type: 'GET',
+                    url: "http://localhost:8080/orders/" + result._id
+                }
+            }
         });
     })
     .catch(err =>{
@@ -64,7 +72,13 @@ router.get('/:orderID', (req,res, _next)=>{
     .then(doc => {  
         console.log("From database: ", doc);
         if(doc){
-            res.status(200).json(doc);
+            res.status(200).json({
+                product: doc,
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:8080/orders'
+                }
+            });
         }else{
             res.status(404).json({
                 message: "No entry found for requested ID!"
@@ -83,7 +97,16 @@ router.get('/:orderID', (req,res, _next)=>{
 router.patch('/:id', (req, res, _next) => {
     const id = req.params.id;
     Order.findByIdAndUpdate(id, { $set: req.body }, { new: true})
-      .then(result => res.status(200).json(result))
+      .then(_result => {
+        console.log(req.body);
+        res.status(200).json({
+        message: 'Updated an order',
+        request: {
+            type: 'PATCH',
+            url: 'http://localhost:8080/orders/' + id
+        }
+        });
+      })     
       .catch(err => res.status(500).json({ error: err}))
 });
 
@@ -92,7 +115,10 @@ router.delete('/:orderID', (req,res, _next)=>{
     Order.deleteOne({_id: id})
     .exec()
     .then(result => {
-        res.status(200).json(result);
+        res.status(200).json({
+            result: result,
+            message: "Deleted an order"
+        });
     })
     .catch(error => {
         console.log(error);
